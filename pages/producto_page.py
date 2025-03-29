@@ -81,7 +81,7 @@ class ProductoFormPage(BasePage):
         producto_elemento = self.lista_producto()          
         self.driver.execute_script("arguments[0].scrollIntoView();", producto_elemento)
         time.sleep(5)
-        # Esperar a que aparezca la opción "Global Universidad Segura Plus"
+        # Esperar a que aparezca la opción "Global Universidad Segura Plus"clear
         actions = ActionChains(self.driver)
         actions.move_to_element(producto_elemento).pause(1).click().perform()
         time.sleep(5)
