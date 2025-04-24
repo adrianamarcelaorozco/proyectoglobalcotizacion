@@ -35,6 +35,27 @@ class ProductoFormPage(BasePage):
         wait = WebDriverWait(self.driver, 30)  # Definir WebDriverWait correctamente
         producto = wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div[1]/section/div[1]/div[2]/div[2]/div[1]/div/div/div/div/div/c-gsv-tvs-perfilador-educativo-english/div/article/div[2]/vlocity_ins-omniscript-step[4]/div[3]/slot/vlocity_ins-omniscript-block/div/div/section/fieldset/slot/vlocity_ins-omniscript-select[2]/slot/c-combobox/div/div/div[2]/div[1]/div/input")))
         return producto
+    
+    def lista_mes(self):
+        wait = WebDriverWait(self.driver, 30)  # Definir WebDriverWait correctamente
+        mes = wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div[1]/section/div[1]/div[2]/div[2]/div[1]/div/div/div/div/div/c-gsv-tvs-perfilador-educativo-english/div/article/div[2]/vlocity_ins-omniscript-step[4]/div[3]/slot/vlocity_ins-omniscript-block/div/div/section/fieldset/slot/vlocity_ins-omniscript-select[9]/slot/c-combobox/div/div/div[2]/div[1]/div/input")))
+        return mes
+    
+    def lista_asegurado(self):
+        wait = WebDriverWait(self.driver, 30)  # Definir WebDriverWait correctamente
+        asegurado = wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div[1]/section/div[1]/div[2]/div[2]/div[1]/div/div/div/div/div/c-gsv-tvs-perfilador-educativo-english/div/article/div[2]/vlocity_ins-omniscript-step[4]/div[3]/slot/vlocity_ins-omniscript-block/div/div/section/fieldset/slot/vlocity_ins-omniscript-select[15]/slot/c-combobox/div/div/div[2]/div[1]/div/input")))
+        self.driver.execute_script("arguments[0].scrollIntoView();", asegurado)
+        asegurado.click()  
+        asegurado.send_keys(config.VALOR_ASEGURADO)  # Ingresa el texto "1.000.000" en el campo de texto.
+        # Selección de la opción en el desplegable (espera explícita)
+        valor_asegu_option = wait.until(EC.visibility_of_element_located(
+        (
+            By.XPATH, "//span[contains(@class, 'slds-listbox__option-text') and text()='5.000.000']")
+        ))  # Espera hasta que la opción "0 a 4.000.000" sea visible.
+        ActionChains(self.driver).move_to_element(valor_asegu_option).perform()  # Desplaza el mouse sobre la opción.
+        valor_asegu_option.click()  # Hace clic en la opción seleccionada.
+        return asegurado
+    
 
     def datos_producto_segura_plus(self):
         producto_elemento = self.lista_producto()          
@@ -53,31 +74,22 @@ class ProductoFormPage(BasePage):
             time.sleep(1)
         producto_elemento.send_keys(Keys.ENTER)  # Seleccionar la opción
         #MES
-        wait = WebDriverWait(self.driver, 30)  # Espera hasta 10 segundos
-        tarifa = wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div[1]/section/div[1]/div[2]/div[2]/div[1]/div/div/div/div/div/c-gsv-tvs-perfilador-educativo-english/div/article/div[2]/vlocity_ins-omniscript-step[4]/div[3]/slot/vlocity_ins-omniscript-block/div/div/section/fieldset/slot/vlocity_ins-omniscript-select[8]/slot/c-combobox/div/div/div[2]/div[1]/div/input")))
-        self.driver.execute_script("arguments[0].click();", tarifa)
-        tarifa.clear()
-        tarifa.send_keys(config.MES_TARIFA)
-        tarifa.send_keys(Keys.RETURN)  # Simula presionar Enter
-        tarifa_option = wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div[1]/section/div[1]/div[2]/div[2]/div[1]/div/div/div/div/div/c-gsv-tvs-perfilador-educativo-english/div/article/div[2]/vlocity_ins-omniscript-step[4]/div[3]/slot/vlocity_ins-omniscript-block/div/div/section/fieldset/slot/vlocity_ins-omniscript-select[8]/slot/c-combobox/div/div/div[2]/div[2]/div/ul/li[2]/div/span/span")))
-        ActionChains(self.driver).move_to_element(tarifa_option).click().perform()
+        producto_mes = self.lista_mes()
+        # Mover el cursor sobre la opción y hacer clic en ella
+        actions = ActionChains(self.driver)
+        self.driver.execute_script("arguments[0].scrollIntoView();", producto_mes)
+        actions.move_to_element(producto_mes).pause(1).click().perform()
+        producto_mes.send_keys(Keys.ENTER)  # Seleccionar la opción
         time.sleep(5)
         #asegurado
-        valor_asegu = wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div[1]/section/div[1]/div[2]/div[2]/div[1]/div/div/div/div/div/c-gsv-tvs-perfilador-educativo-english/div/article/div[2]/vlocity_ins-omniscript-step[4]/div[3]/slot/vlocity_ins-omniscript-block/div/div/section/fieldset/slot/vlocity_ins-omniscript-select[15]/slot/c-combobox/div/div/div[2]/div[1]/div/input")))  
-        self.driver.execute_script("arguments[0].scrollIntoView();", valor_asegu)
-        valor_asegu.click()  
-        valor_asegu.send_keys(config.VALOR_ASEGURADO)  # Ingresa el texto "1.000.000" en el campo de texto.
-        # Selección de la opción en el desplegable (espera explícita)
-        valor_asegu_option = wait.until(EC.visibility_of_element_located(
-        (
-            By.XPATH, "//span[contains(@class, 'slds-listbox__option-text') and text()='5.000.000']")
-        ))  # Espera hasta que la opción "0 a 4.000.000" sea visible.
-        ActionChains(self.driver).move_to_element(valor_asegu_option).perform()  # Desplaza el mouse sobre la opción.
-        valor_asegu_option.click()  # Hace clic en la opción seleccionada.
+        producto_asegurado = self.lista_asegurado()
+        # Mover el cursor sobre la opción y hacer clic en ella
+        
         time.sleep(7)
     pass
 
     def datos_producto_segura_plus_semestre(self):
+        time.sleep(5)
         producto_elemento = self.lista_producto()          
         self.driver.execute_script("arguments[0].scrollIntoView();", producto_elemento)
         time.sleep(5)
@@ -91,28 +103,27 @@ class ProductoFormPage(BasePage):
             time.sleep(1)
         producto_elemento.send_keys(Keys.ENTER)  # Seleccionar la opción
         #MES
-        wait = WebDriverWait(self.driver, 30)  # Espera hasta 10 segundos
-        tarifa = wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div[1]/section/div[1]/div[2]/div[2]/div[1]/div/div/div/div/div/c-gsv-tvs-perfilador-educativo-english/div/article/div[2]/vlocity_ins-omniscript-step[4]/div[3]/slot/vlocity_ins-omniscript-block/div/div/section/fieldset/slot/vlocity_ins-omniscript-select[8]/slot/c-combobox/div/div/div[2]/div[1]/div/input")))
-        self.driver.execute_script("arguments[0].click();", tarifa)
-        tarifa.clear()
-        tarifa.send_keys(config.MES_TARIFA)
-        tarifa.send_keys(Keys.RETURN)  # Simula presionar Enter
-        tarifa_option = wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div[1]/section/div[1]/div[2]/div[2]/div[1]/div/div/div/div/div/c-gsv-tvs-perfilador-educativo-english/div/article/div[2]/vlocity_ins-omniscript-step[4]/div[3]/slot/vlocity_ins-omniscript-block/div/div/section/fieldset/slot/vlocity_ins-omniscript-select[8]/slot/c-combobox/div/div/div[2]/div[2]/div/ul/li[2]/div/span/span")))
-        ActionChains(self.driver).move_to_element(tarifa_option).click().perform()
+        producto_mes = self.lista_mes()
+        # Mover el cursor sobre la opción y hacer clic en ella
+        actions = ActionChains(self.driver)
+        self.driver.execute_script("arguments[0].scrollIntoView();", producto_mes)
+        actions.move_to_element(producto_mes).pause(1).click().perform()
+        producto_mes.send_keys(Keys.ENTER)  # Seleccionar la opción
         time.sleep(5)
         #asegurado
+        wait = WebDriverWait(self.driver, 30)  # Espera hasta 10 segundos
         valor_asegu = wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div[1]/section/div[1]/div[2]/div[2]/div[1]/div/div/div/div/div/c-gsv-tvs-perfilador-educativo-english/div/article/div[2]/vlocity_ins-omniscript-step[4]/div[3]/slot/vlocity_ins-omniscript-block/div/div/section/fieldset/slot/vlocity_ins-omniscript-select[15]/slot/c-combobox/div/div/div[2]/div[1]/div/input")))  
         self.driver.execute_script("arguments[0].scrollIntoView();", valor_asegu)
         valor_asegu.click()  
-        valor_asegu.send_keys(config.VALOR_ASEGURADO2)  # Ingresa el texto "1.000.000" en el campo de texto.
+        valor_asegu.send_keys(config.VALOR_ASEGURADO)  # Ingresa el texto "1.000.000" en el campo de texto.
         # Selección de la opción en el desplegable (espera explícita)
         valor_asegu_option = wait.until(EC.visibility_of_element_located(
         (
-            By.XPATH, "//span[contains(@class, 'slds-listbox__option-text') and text()='2.000.000']")
+            By.XPATH, "//span[contains(@class, 'slds-listbox__option-text') and text()='5.000.000']")
         ))  # Espera hasta que la opción "0 a 4.000.000" sea visible.
         ActionChains(self.driver).move_to_element(valor_asegu_option).perform()  # Desplaza el mouse sobre la opción.
         valor_asegu_option.click()  # Hace clic en la opción seleccionada.
-        time.sleep(5)
+        time.sleep(7)
         # XPath del combo box (campo de entrada)
         semestre_xpath = "/html[1]/body[1]/div[4]/div[1]/section[1]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/c-gsv-tvs-perfilador-educativo-english[1]/div[1]/article[1]/div[2]/vlocity_ins-omniscript-step[4]/div[3]/slot[1]/vlocity_ins-omniscript-block[1]/div[1]/div[1]/section[1]/fieldset[1]/slot[1]/vlocity_ins-omniscript-select[16]/slot[1]/c-combobox[1]/div[1]/div[1]/div[2]/div[1]/div[1]/input[1]"
         # XPath de la opción con el valor '6'
@@ -129,7 +140,7 @@ class ProductoFormPage(BasePage):
             combobox_element.send_keys(Keys.ARROW_DOWN)
             time.sleep(1)
         combobox_element.send_keys(Keys.ENTER)  # Seleccionar la opción
-        time.sleep(3)  # Esperar para ver si el clic se procesó correctamente
+        time.sleep(7)  # Esperar para ver si el clic se procesó correctamente
         print("Opción 6 seleccionada.")
     pass
 
@@ -205,7 +216,7 @@ class ProductoFormPage(BasePage):
             combobox_element.send_keys(Keys.ARROW_DOWN)
             time.sleep(1)
         combobox_element.send_keys(Keys.ENTER)  # Seleccionar la opción
-        time.sleep(3)  # Esperar para ver si el clic se procesó correctamente
+        time.sleep(7)  # Esperar para ver si el clic se procesó correctamente
         print("Opción 6 seleccionada.")
     pass
 
@@ -235,18 +246,6 @@ class ProductoFormPage(BasePage):
         texto_xpath = "//*[contains(text(), '$ 24.230.000,00')]"  # Busca cualquier etiqueta que contenga el texto exacto
         # Esperar hasta que el texto sea visible en la página
         print("El texto '$ 24.230.000,00' está presente en la página.")
-        time.sleep(5)
-        # XPath basado en el texto "NO"
-        si_xpath = "//label[span[text()='NO']]"
-        # Esperar hasta que el elemento esté visible y clickeable
-        si_element = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, si_xpath))
-        )
-        # Hacer scroll hasta el elemento (opcional, por si no está en pantalla)
-        self.driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", si_element)
-        # Hacer clic en el elemento
-        si_element.click()
-        print("Se hizo clic en el botón 'NO' correctamente.")
         time.sleep(5)
         pass
 
@@ -281,19 +280,6 @@ class ProductoFormPage(BasePage):
         texto_xpath = "//*[contains(text(), '$ 14.538.000,00')]"  # Busca cualquier etiqueta que contenga el texto exacto
         # Esperar hasta que el texto sea visible en la página
         print("El texto '$ 14.538.000,00' está presente en la página.")
-        time.sleep(5)
-
-        # XPath basado en el texto "NO"
-        si_xpath = "//label[span[text()='NO']]"
-        # Esperar hasta que el elemento esté visible y clickeable
-        si_element = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, si_xpath))
-        )
-        # Hacer scroll hasta el elemento (opcional, por si no está en pantalla)
-        self.driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", si_element)
-        # Hacer clic en el elemento
-        si_element.click()
-        print("Se hizo clic en el botón 'NO' correctamente.")
         time.sleep(5)
         pass
 

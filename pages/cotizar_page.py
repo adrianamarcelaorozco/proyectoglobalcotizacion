@@ -86,12 +86,34 @@ class CotizarFormPage(BasePage):
         time.sleep(5)  # Pequeña pausa
         wait = WebDriverWait(self.driver, 20)
         # Esperar a que el combobox sea visible y clickable
-        combobox_input = wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div[1]/section/div[1]/div[2]/div[2]/div[1]/div/div/div/div/div/c-gsv-tvs-perfilador-educativo-english/div/article/div[2]/vlocity_ins-omniscript-step[2]/div[3]/slot/vlocity_ins-omniscript-block/div/div/section/fieldset/slot/vlocity_ins-omniscript-select[2]/slot/c-combobox/div/div/div[2]/div[1]/div/input")))
-        combobox_input.click()  # Asegurar que el dropdown se despliegue
-        combobox_input.send_keys("Femenino")
-        wait = WebDriverWait(self.driver, 20)  # Aumentado a 20 segundos
-        opcion_femenino = wait.until(EC.presence_of_element_located((By.XPATH, "/html/body/div[4]/div[1]/section/div[1]/div[2]/div[2]/div[1]/div/div/div/div/div/c-gsv-tvs-perfilador-educativo-english/div/article/div[2]/vlocity_ins-omniscript-step[2]/div[3]/slot/vlocity_ins-omniscript-block/div/div/section/fieldset/slot/vlocity_ins-omniscript-select[2]/slot/c-combobox/div/div/div[2]/div[2]/div/ul/li[3]/div")))
-        opcion_femenino.click()
+        # Espera configurada
+        wait = WebDriverWait(self.driver, 15)
+
+        label_sexo = wait.until(EC.presence_of_element_located(
+            (By.XPATH, '//label[@for="comboboxId-387" and contains(., "Sexo")]')
+        ))
+        # Scroll al label
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", label_sexo)
+        time.sleep(1)
+        
+        # 1️⃣ Encuentra el input por ID (estático en este caso)
+
+        dropdown_input = wait.until(EC.element_to_be_clickable((By.ID, "comboboxId-811")))
+
+        # 2️⃣ Haz scroll y clic para desplegar opciones
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", dropdown_input)
+        time.sleep(1)
+        self.driver.execute_script("arguments[0].click();", dropdown_input)
+
+        # 3️⃣ Espera que aparezca el dropdown con las opciones
+        wait.until(EC.presence_of_element_located((By.XPATH, '//div[@role="listbox"]//li')))
+
+        # 4️⃣ Selecciona la opción "Femenino"
+        option_xpath = '//div[@role="option"][.//span[text()="Femenino"]]'
+        option = wait.until(EC.element_to_be_clickable((By.XPATH, option_xpath)))
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", option)
+        option.click()
+
         time.sleep(10)  # Pequeña pausa
             
     def boton_guardar(self):
