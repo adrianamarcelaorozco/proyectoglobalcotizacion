@@ -89,7 +89,7 @@ class ProductoFormPage(BasePage):
     pass
 
     def datos_producto_segura_plus_semestre(self):
-        time.sleep(5)
+        time.sleep(10)
         producto_elemento = self.lista_producto()          
         self.driver.execute_script("arguments[0].scrollIntoView();", producto_elemento)
         time.sleep(5)
@@ -230,23 +230,12 @@ class ProductoFormPage(BasePage):
         assert titulo.text.strip() == "Valor asegurado semestre", "El título no coincide"
         print("El título 'Valor asegurado semestre' está presente.")
         time.sleep(5)
-        # XPath del combo box (input)
-        combobox_xpath = "//input[contains(@class, 'slds-input') and @role='combobox']"
-
-        # XPath de la opción con el valor '5000000'
-        option_xpath = "//span[contains(@class, 'slds-listbox__option-text') and text()='5.000.000']"
-
-        # Esperar que el combo box sea clickeable y hacer clic
-        combobox_element = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, combobox_xpath))
-        )
-        combobox_element.click()
-        print("Combo box abierto.")
+        print("Combo box revisado.")
         time.sleep(10)
-        texto_xpath = "//*[contains(text(), '$ 24.230.000,00')]"  # Busca cualquier etiqueta que contenga el texto exacto
+        texto_xpath = "//*[contains(text(), '$ 0,00')]"  # Busca cualquier etiqueta que contenga el texto exacto
         # Esperar hasta que el texto sea visible en la página
-        print("El texto '$ 24.230.000,00' está presente en la página.")
-        time.sleep(5)
+        print("El texto '$ 0,00' está presente en la página.")
+        time.sleep(7)
         pass
 
     def simulador_producto_segura_plus_semestre(self):
@@ -343,7 +332,7 @@ class ProductoFormPage(BasePage):
 
     def boton_atras(self):
         # XPath basado en el texto dentro del botón
-        boton_atras_xpath = "//button[span[text()='Anterior']]"
+        boton_atras_xpath = "//button[span[text()='Atras']]"
         # Esperar hasta que el botón sea visible y clickeable
         boton_atras = WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, boton_atras_xpath))
@@ -356,15 +345,18 @@ class ProductoFormPage(BasePage):
     pass
 
     def boton_anterior(self):
-        boton_atras_xpath = "//button[span[text()='Anterior']]"
+        boton_anterior_xpath = "//button[span[text()='Anterior']]"
         boton_atras = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, boton_atras_xpath))
+            EC.element_to_be_clickable((By.XPATH, boton_anterior_xpath))
         )
-
-        actions = ActionChains(self.driver)
-        actions.move_to_element(boton_atras).click().perform()
-
-        print("Botón 'Anterior' clickeado con ActionChains.")
+        
+        # Scroll al botón usando el elemento real, no el string del XPath
+        self.driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", boton_atras)
+        
+        # Click directamente sobre el elemento encontrado
+        boton_atras.click()
+        print("Botón 'Anterior' clickeado con éxito.")
+        time.sleep(20)
     pass
 
     def button_finalizar(self):

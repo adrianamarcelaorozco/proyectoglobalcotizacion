@@ -83,36 +83,24 @@ class CotizarFormPage(BasePage):
         )
         time.sleep(1)  # Pequeña pausa
         campo_fecha.send_keys('18-02-2020')  # Ingresa la fecha manualmente (por ejemplo, 01/18/1970).
-        time.sleep(5)  # Pequeña pausa
         wait = WebDriverWait(self.driver, 20)
-        # Esperar a que el combobox sea visible y clickable
-        # Espera configurada
-        wait = WebDriverWait(self.driver, 15)
-
+        # 1️⃣ Espera que el label 'Sexo' esté presente
         label_sexo = wait.until(EC.presence_of_element_located(
-            (By.XPATH, '//label[@for="comboboxId-387" and contains(., "Sexo")]')
-        ))
-        # Scroll al label
+            (By.XPATH, '//label[contains(@for, "comboboxId") and .//span[text()="Sexo"]]')))
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", label_sexo)
         time.sleep(1)
-        
-        # 1️⃣ Encuentra el input por ID (estático en este caso)
 
-        dropdown_input = wait.until(EC.element_to_be_clickable((By.ID, "comboboxId-811")))
-
-        # 2️⃣ Haz scroll y clic para desplegar opciones
-        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", dropdown_input)
+        input_xpath = '//label[.//span[text()="Sexo"]]/ancestor::div[contains(@class, "slds-form-element")]/descendant::input[@role="combobox"]'
+        dropdown_input = wait.until(EC.element_to_be_clickable((By.XPATH, input_xpath)))
+        dropdown_input.click()
         time.sleep(1)
-        self.driver.execute_script("arguments[0].click();", dropdown_input)
 
-        # 3️⃣ Espera que aparezca el dropdown con las opciones
-        wait.until(EC.presence_of_element_located((By.XPATH, '//div[@role="listbox"]//li')))
-
-        # 4️⃣ Selecciona la opción "Femenino"
-        option_xpath = '//div[@role="option"][.//span[text()="Femenino"]]'
-        option = wait.until(EC.element_to_be_clickable((By.XPATH, option_xpath)))
-        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", option)
-        option.click()
+        # 3️⃣ Espera la apertura de la lista y selecciona "Femenino" con data-label
+        option_femenino = wait.until(EC.element_to_be_clickable(
+            (By.XPATH, '//div[@role="option" and @data-label="Femenino"]'))
+        )
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", option_femenino)
+        option_femenino.click()
 
         time.sleep(10)  # Pequeña pausa
             
