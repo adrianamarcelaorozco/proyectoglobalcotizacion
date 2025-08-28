@@ -118,7 +118,7 @@ class FormPage(BasePage):
         element_email = self.driver.find_element(By.XPATH, "//input[@required and @placeholder='Correo electrónico']")
         element_email.send_keys(config.EMAIL)
 
-        self.enter_text(By.XPATH, '//*[@id="inputId-328"]', config.CIUDAD)  # Datos de la ciudad
+        self.enter_text(By.XPATH, '//*[@id="inputId-336"]', config.CIUDAD)  # Datos de la ciudad
 
         dropdown_option = WebDriverWait(self.driver, 10).until(  # Selección de la ciudad (con una espera explícita)
             EC.visibility_of_element_located(
@@ -127,24 +127,16 @@ class FormPage(BasePage):
         )
         ActionChains(self.driver).move_to_element(dropdown_option).perform()  # Desplazarse al elemento
         dropdown_option.click()  # Selección de la opción       
-        hidden_field = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="input25-332"]')))  # validar que el departamento sea el correcto
+        hidden_field = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="input25-340"]')))  # validar que el departamento sea el correcto
         hidden_value = hidden_field.get_attribute(config.DEPARTAMENTO)  # Obtener valor de un campo oculto
-        country_field = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="input27-334"]'))) # validar que el pais sea el correcto
+        country_field = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="input25-340"]'))) # validar que el pais sea el correcto
         country_value = country_field.get_attribute(config.PAIS)  # Obtener valor de país
-        input_field = WebDriverWait(self.driver, 10).until(  # Espera explícita hasta que el campo de teléfono esté presente en el DOM.
-            EC.presence_of_element_located((By.XPATH, '//*[@id="input33-340"]'))
+        input_field = WebDriverWait(self.driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//input[@type='tel']"))
         )
-        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", input_field)  # Desplaza el campo de teléfono a la vista.
-        self.driver.execute_script("arguments[0].click();", input_field)  # Hace clic en el campo de teléfono para activarlo.
-        ActionChains(self.driver).move_to_element(input_field).click().send_keys(config.TELEFONO).perform()  # Mueve al campo de teléfono, hace clic y envía el número de teléfono.
-        self.enter_text(By.XPATH, '//*[@id="inputId-343"]', config.EVENTO) # Datos del evento
-        dropdown_option = WebDriverWait(self.driver, 10).until(  # Selección del evento (esperar la opción visible y hacer clic)
-            EC.visibility_of_element_located(
-                (By.XPATH, "//span[contains(@class, 'slds-listbox__option-text') and text()='FERIA DEL LIBRO 2024']")
-            )
-        )
-        ActionChains(self.driver).move_to_element(dropdown_option).perform()  # Desplaza el cursor hasta la opción del dropdown.
-        dropdown_option.click()  # Hace clic en la opción del dropdown.
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", input_field)
+        self.driver.execute_script("arguments[0].click();", input_field)
+        ActionChains(self.driver).move_to_element(input_field).click().send_keys(config.TELEFONO).perform()
         checkbox = WebDriverWait(self.driver, 20).until( # Marcar checkbox
             EC.element_to_be_clickable((By.XPATH, '//*[@class="slds-checkbox_faux"]'))
         )
@@ -232,11 +224,10 @@ class FormPage(BasePage):
         ActionChains(self.driver).move_to_element(checkbox).click().perform()  # Mueve al checkbox y lo selecciona.
 
     def boton_siguiente2(self):
-        batons = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '/html/body/div[4]/div[1]/section/div[1]/div[2]/div[2]/div[1]/div/div/div/div/div/c-gsv-formulary-english/div/article/div[2]/vlocity_ins-omniscript-step[4]/div[3]/slot/vlocity_ins-omniscript-block/div/div/section/fieldset/slot/vlocity_ins-omniscript-custom-lwc/slot/c-global-onboarding-custom-button-cmp/div/button'))
-        )  # Espera hasta que el botón "Siguiente" esté clickeable.
-        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", batons)  # Desplaza el campo de teléfono a la vista.
-        self.driver.execute_script("arguments[0].click();", batons)  # Hace clic en el campo de teléfono para activarlo.
-        time.sleep(15)  # Espera 15 segundos para garantizar que la acción se complete.
+        boton = WebDriverWait(self.driver, 15).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[contains(text(),'Guardar y continuar')]"))
+        )
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", boton)
+        self.driver.execute_script("arguments[0].click();", boton)
         print("Validación Datos de contacto")
         pass

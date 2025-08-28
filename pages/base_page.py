@@ -32,3 +32,5 @@ class BasePage:
         """ Selecciona una opción en un dropdown """
         self.click_element(*by_dropdown)  # Abre el dropdown
         self.click_element(*by_option)  # Selecciona la opción
+
+

@@ -1,0 +1,26 @@
+{
+  "name": "proyectoglobalcotizacion",
+  "version": "1.0.0",
+  "description": "**Crear el entorno virtual**: ```bash python -m venv venv source venv/bin/activate   # En Windows: venv\\Scripts\\activate ``` **Instalar los requerimientos**: ```bash python -m venv venv source venv/bin/activate **En Windows**: venv\\Scripts\\activate ```",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adrianamarcelaorozco/proyectoglobalcotizacion.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adrianamarcelaorozco/proyectoglobalcotizacion/issues"
+  },
+  "homepage": "https://github.com/adrianamarcelaorozco/proyectoglobalcotizacion#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.54.1"
+  }
+}

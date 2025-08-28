@@ -6,6 +6,7 @@ import time
 from config import config
 from selenium.webdriver.common.action_chains import ActionChains  # Permite realizar interacciones avanzadas
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import StaleElementReferenceException, TimeoutException
 
 class ProductoFormPage(BasePage):
     def __init__(self, driver):
@@ -35,12 +36,30 @@ class ProductoFormPage(BasePage):
         wait = WebDriverWait(self.driver, 30)  # Definir WebDriverWait correctamente
         producto = wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div[1]/section/div[1]/div[2]/div[2]/div[1]/div/div/div/div/div/c-gsv-tvs-perfilador-educativo-english/div/article/div[2]/vlocity_ins-omniscript-step[4]/div[3]/slot/vlocity_ins-omniscript-block/div/div/section/fieldset/slot/vlocity_ins-omniscript-select[2]/slot/c-combobox/div/div/div[2]/div[1]/div/input")))
         return producto
-    
-    def lista_mes(self):
-        wait = WebDriverWait(self.driver, 30)  # Definir WebDriverWait correctamente
-        mes = wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div[1]/section/div[1]/div[2]/div[2]/div[1]/div/div/div/div/div/c-gsv-tvs-perfilador-educativo-english/div/article/div[2]/vlocity_ins-omniscript-step[4]/div[3]/slot/vlocity_ins-omniscript-block/div/div/section/fieldset/slot/vlocity_ins-omniscript-select[9]/slot/c-combobox/div/div/div[2]/div[1]/div/input")))
-        return mes
-    
+
+    def seleccionar_tarifa_septiembre(self, timeout=20):
+        w = WebDriverWait(self.driver, timeout)
+        # 1) Tomar el combobox que corresponde al label "Tarifa"
+        container = w.until(EC.presence_of_element_located((
+            By.XPATH, "//label[.//span[normalize-space()='Tarifa']]/ancestor::div[contains(@class,'slds-combobox')][1]"
+        )))
+        # 2) Abrir el dropdown (input o ícono ▼ del mismo combobox)
+        try:
+            opener = container.find_element(By.XPATH, ".//input[@role='combobox']")
+        except Exception:
+            opener = container.find_element(By.XPATH, ".//span[contains(@class,'slds-input__icon_right')]")
+        self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", opener)
+        self.driver.execute_script("arguments[0].click();", opener)
+        # 3) Esperar el listbox de ese mismo combobox
+        w.until(lambda d: container.find_element(By.XPATH, ".//div[@role='listbox']").is_displayed())
+        listbox = container.find_element(By.XPATH, ".//div[@role='listbox']")
+        # 4) Click en "Septiembre" dentro del listbox
+        try:
+            opcion = listbox.find_element(By.XPATH, ".//div[@role='option' and @data-label='Septiembre']")
+        except Exception:
+            opcion = listbox.find_element(By.XPATH, ".//span[normalize-space()='Septiembre']/ancestor::div[@role='option']")
+        self.driver.execute_script("arguments[0].click();", opcion)   
+
     def lista_asegurado(self):
         wait = WebDriverWait(self.driver, 30)  # Definir WebDriverWait correctamente
         asegurado = wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div[1]/section/div[1]/div[2]/div[2]/div[1]/div/div/div/div/div/c-gsv-tvs-perfilador-educativo-english/div/article/div[2]/vlocity_ins-omniscript-step[4]/div[3]/slot/vlocity_ins-omniscript-block/div/div/section/fieldset/slot/vlocity_ins-omniscript-select[15]/slot/c-combobox/div/div/div[2]/div[1]/div/input")))
@@ -74,12 +93,7 @@ class ProductoFormPage(BasePage):
             time.sleep(1)
         producto_elemento.send_keys(Keys.ENTER)  # Seleccionar la opción
         #MES
-        producto_mes = self.lista_mes()
-        # Mover el cursor sobre la opción y hacer clic en ella
-        actions = ActionChains(self.driver)
-        self.driver.execute_script("arguments[0].scrollIntoView();", producto_mes)
-        actions.move_to_element(producto_mes).pause(1).click().perform()
-        producto_mes.send_keys(Keys.ENTER)  # Seleccionar la opción
+        self.seleccionar_tarifa_septiembre()
         time.sleep(5)
         #asegurado
         producto_asegurado = self.lista_asegurado()
@@ -103,7 +117,8 @@ class ProductoFormPage(BasePage):
             time.sleep(1)
         producto_elemento.send_keys(Keys.ENTER)  # Seleccionar la opción
         #MES
-        producto_mes = self.lista_mes()
+        producto_mes = self.seleccionar_tarifa_septiembre()
+
         # Mover el cursor sobre la opción y hacer clic en ella
         actions = ActionChains(self.driver)
         self.driver.execute_script("arguments[0].scrollIntoView();", producto_mes)
