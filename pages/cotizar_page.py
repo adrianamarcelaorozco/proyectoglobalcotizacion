@@ -174,15 +174,16 @@ class CotizarFormPage(BasePage):
         # Espera hasta que el combobox sea visible y clickeable
         wait = WebDriverWait(self.driver, 20)
         # Esperar a que el input del combobox esté presente y hacer clic
-        combobox_input = wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div[1]/section/div[1]/div[2]/div[2]/div[1]/div/div/div/div/div/c-gsv-tvs-perfilador-educativo-english/div/article/div[2]/vlocity_ins-omniscript-step[3]/div[3]/slot/vlocity_ins-omniscript-block/div/div/section/fieldset/slot/vlocity_ins-omniscript-select[1]/slot/c-combobox/div/div/div[2]/div[1]/div/input")))
-        time.sleep(2)
-        # Escribir el valor "Prekinder" (si el combobox permite texto)
-        combobox_input.send_keys("Prekinder")
-        combobox_input.send_keys(Keys.RETURN)  # Presiona Enter para seleccionar la opción
-        time.sleep(2)
-        # Alternativamente, si hay una lista desplegable, selecciona la opción "Prekinder"
-        option_prekinder = wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div[1]/section/div[1]/div[2]/div[2]/div[1]/div/div/div/div/div/c-gsv-tvs-perfilador-educativo-english/div/article/div[2]/vlocity_ins-omniscript-step[3]/div[3]/slot/vlocity_ins-omniscript-block/div/div/section/fieldset/slot/vlocity_ins-omniscript-select[1]/slot/c-combobox/div/div/div[2]/div[2]/div/ul/li[2]/div/span/span")))
+        # Encuentra el input asociado al label 'Curso'
+        combobox_input = wait.until(EC.element_to_be_clickable((
+            By.XPATH, "//input[@role='combobox' and @aria-haspopup='listbox']"
+        )))
+        combobox_input.click()
+        print("📌 Combobox abierto")
+
+        option_prekinder = wait.until(EC.element_to_be_clickable((
+        By.XPATH, "//span[normalize-space()='Prekinder']"
+        )))
         option_prekinder.click()
-        print("Prekinder seleccionado correctamente")
-        time.sleep(5)
+        print("✅ Prekinder seleccionado correctamente")
         pass  

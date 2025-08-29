@@ -14,28 +14,69 @@ class ProductoFormPage(BasePage):
         self.wait = WebDriverWait(driver, 30)  # Inicializar `wait` correctamente
 
     def datos_producto(self):
-        # Esperar a que el combobox sea visible y clickeable
-        combobox_año = self.wait.until(EC.element_to_be_clickable((By.XPATH,
-            "/html/body/div[4]/div[1]/section/div[1]/div[2]/div[2]/div[1]/div/div/div/div/div/c-gsv-tvs-perfilador-educativo-english/div/article/div[2]/vlocity_ins-omniscript-step[4]/div[3]/slot/vlocity_ins-omniscript-block/div/div/section/fieldset/slot/vlocity_ins-omniscript-custom-lwc[1]/slot/c-gsv-year-select-cmp/lightning-combobox/div/div[1]/lightning-base-combobox/div/div/div[1]/button"))
-        )
-        self.driver.execute_script("arguments[0].scrollIntoView();", combobox_año)
-        time.sleep(5)
-        self.driver.execute_script("arguments[0].click();", combobox_año)
-        # Esperar la opción del año 2038 y seleccionarla
-        opcion_2038 = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//lightning-base-combobox-item[@data-value='2038']")))
+        # 1) Abrir el combobox de Año
+        wait = WebDriverWait(self.driver, 20)
+        # 1) Hacer clic en el combobox
+        combobox = wait.until(EC.element_to_be_clickable((
+            By.XPATH,
+            "//button[@role='combobox' and @aria-label='Año de ingreso a cotizar']"
+        )))
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", combobox)
+        combobox.click()
+        print("📌 Combobox abierto")
+
+        # 2) Esperar que aparezca el dropdown
+        dropdown = wait.until(EC.presence_of_element_located((
+            By.XPATH, "//div[@role='listbox' and contains(@id,'dropdown-element')]"
+        )))
+        print("📂 Dropdown desplegado")
+
+        # 3) Seleccionar la opción 2038 (lightning-base-combobox-item)
+        opcion_2038 = wait.until(EC.element_to_be_clickable((
+            By.XPATH,
+            "//lightning-base-combobox-item[@data-value='2038']"
+        )))
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", opcion_2038)
         opcion_2038.click()
+        print("✅ Año 2038 seleccionado")
         time.sleep(2)
-        observaciones = self.wait.until(EC.element_to_be_clickable((By.XPATH,
-        "/html/body/div[4]/div[1]/section/div[1]/div[2]/div[2]/div[1]/div/div/div/div/div/c-gsv-tvs-perfilador-educativo-english/div/article/div[2]/vlocity_ins-omniscript-step[4]/div[3]/slot/vlocity_ins-omniscript-block/div/div/section/fieldset/slot/vlocity_ins-omniscript-text/slot/c-input/div/div[2]/input")))
-        observaciones.click()
-        observaciones.send_keys("Ninguno")
-        print("Año de ingreso a cotizar")
+        try:
+        # 1) Esperar a que el input después de la etiqueta "Observaciones" sea clickeable
+            input_observaciones = WebDriverWait(self.driver, 20).until(
+                EC.element_to_be_clickable((
+                    By.XPATH,
+                    "//label[normalize-space(text())='Observaciones']/following::input[1]"
+                ))
+            )
+
+            # 2) Scroll al campo
+            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", input_observaciones)
+
+            # 3) Clic en el campo
+            input_observaciones.click()
+            print("✅ Se hizo clic en Observaciones")
+
+            # 4) Limpiar por si tiene texto previo
+            input_observaciones.clear()
+
+            # 5) Ingresar el texto "Ninguno"
+            input_observaciones.send_keys("Ninguno")
+            print("✍️ Texto 'Ninguno' ingresado")
+        except Exception as e:
+            print(f"❌ Error al interactuar con Observaciones: {e}")
+
     pass
 
     def lista_producto(self):
-        wait = WebDriverWait(self.driver, 30)  # Definir WebDriverWait correctamente
-        producto = wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div[1]/section/div[1]/div[2]/div[2]/div[1]/div/div/div/div/div/c-gsv-tvs-perfilador-educativo-english/div/article/div[2]/vlocity_ins-omniscript-step[4]/div[3]/slot/vlocity_ins-omniscript-block/div/div/section/fieldset/slot/vlocity_ins-omniscript-select[2]/slot/c-combobox/div/div/div[2]/div[1]/div/input")))
+        wait = WebDriverWait(self.driver, 30)
+
+        # Buscar el input asociado al label 'Producto'
+        producto = wait.until(EC.element_to_be_clickable((
+            By.XPATH,
+            "//label[normalize-space(text())='Producto']/following::input[1]"
+        )))
         return producto
+
 
     def seleccionar_tarifa_septiembre(self, timeout=20):
         w = WebDriverWait(self.driver, timeout)

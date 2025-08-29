@@ -69,29 +69,25 @@ class FinancieroFormPage(BasePage):
             "Estudiar un posgrado",
             "Comprar casa"
         ]
-        for label in checkbox_labels:
-            # 1. Ubicar checkbox por el texto visible
-            xpath = f"//label[span[normalize-space(text())='{label}']]"
-            checkbox_label = wait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
-            # 2. Scroll hasta el checkbox
-            self.driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", checkbox_label)
-            # 3. Click en el label (activa el checkbox)
-            checkbox_label.click()
-         # Opciones que quieres seleccionar
+        # Opciones que quieres seleccionar
         transportes = ["Bicicleta", "Carro Particular", "Patineta"]
 
         for transporte in transportes:
             # XPath: busca el input checkbox por su value
             xpath = f"//input[@type='checkbox' and @name='transport' and @value='{transporte}']"
             
-            checkbox = wait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
+            checkbox = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
             
-            # Scroll hasta el checkbox
-            self.driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", checkbox)
-
-            # Hacer clic sobre el label asociado (más seguro que click directo en el input)
+            # Buscar el label asociado al input
             label = self.driver.find_element(By.XPATH, f"//label[@for='{checkbox.get_attribute('id')}']")
-            label.click()
+            
+            # Scroll hasta el label
+            self.driver.execute_script(
+                "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", label
+            )
+
+            # Clic en el label (más confiable que en el input)
+            wait.until(EC.element_to_be_clickable((By.XPATH, f"//label[@for='{checkbox.get_attribute('id')}']"))).click()
             
     def button_siguiente(self):
         try:

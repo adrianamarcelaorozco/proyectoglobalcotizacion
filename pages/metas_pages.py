@@ -2,6 +2,7 @@ from pages.base_page import BasePage
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait # Manejo de esperas en Selenium
 from selenium.webdriver.support import expected_conditions as EC # Condiciones de espera explícitas
+from selenium.common.exceptions import TimeoutException
 import time
 from config import config
 from utils.helpers import generar_identificacion_aleatoria
@@ -9,28 +10,31 @@ from selenium.webdriver.common.action_chains import ActionChains  # Permite real
 
 class MetasFormPage(BasePage):
     def metas_fiancieras(self):
-        # XPath del botón o elemento al que quieres hacer scroll
-        element_xpath = "/html/body/div[4]/div[1]/section/div[1]/div[2]/div[2]/div[1]/div/div/div/div/div/c-gsv-data-comparador-english/div/article/div[2]/vlocity_ins-omniscript-step/div[3]/slot/vlocity_ins-omniscript-navigate-action[1]/slot/c-navigate-action/slot/div/c-button/button"
-        element = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, element_xpath)))  # Esperar a que el elemento esté presente en el DOM        
-        self.driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", element) # Hacer scroll hasta el elemento utilizando JavaScript
-        # XPath del elemento que contiene el texto a verificar
-        time.sleep(3)
-        text_xpath = "//*[@id='brandBand_2']/div/div/div/div/c-gsv-data-comparador-english/div/article/div[2]/vlocity_ins-omniscript-step/div[3]/slot/vlocity_ins-omniscript-custom-lwc[2]/slot/c-global-onboarding-comparador-cmp/main/section[1]/c-global-onboarding-product-card-cmp/article/header/div/h2"
-        element = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, text_xpath))) # Esperar a que el elemento esté presente
-        element_text = element.text # Obtener el texto del elemento
-        element_text == "Solución educativa"
-        time.sleep(5)
-        # XPath del botón al que se debe hacer clic
-        pass
+        xpath = "//article[.//h2[normalize-space()='Solución Educativa']]//button[normalize-space()='Cotizar']"
+        try:
+            # 1) Espera hasta que aparezca en el DOM (aunque no sea visible aún)
+            element = WebDriverWait(self.driver, 40).until(
+                EC.presence_of_element_located((By.XPATH, xpath))
+            )
+            # 2) Scroll hasta el elemento
+            self.driver.execute_script(
+                "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", element
+            )
+            return element  # 🔹 Devolvemos el elemento para usarlo después
 
+        except TimeoutException:
+            print("⏰ No se pudo encontrar el botón 'Cotizar' en la tarjeta 'Solución Educativa'.")
+            raise
 
     def button_cotizar(self):
-        button_xpath = "/html/body/div[4]/div[1]/section/div[1]/div[2]/div[2]/div[1]/div/div/div/div/div/c-gsv-data-comparador-english/div/article/div[2]/vlocity_ins-omniscript-step/div[3]/slot/vlocity_ins-omniscript-custom-lwc[2]/slot/c-global-onboarding-comparador-cmp/main/section[1]/c-global-onboarding-product-card-cmp/article/section/div[1]/button"
-        button_element = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, button_xpath))) # Esperar a que el botón esté presente
-        button_element.click() # Hacer clic en el botón
-        time.sleep(30) # Espera 30 segundos para asegurar que la acción se haya completado.
-        print("Validación Metas Financieras")
-        pass
+        # Usamos el método anterior para obtener el botón
+        boton = self.metas_fiancieras()
+        # 3) Esperamos un poco extra si es necesario
+        time.sleep(2)
+        # 4) Hacemos clic en el botón
+        boton.click()
+        # 5) Validación
+        print("✅ Se hizo clic en el botón 'Cotizar' (Metas Financieras)")
 
 
     def button_regreso(self):
